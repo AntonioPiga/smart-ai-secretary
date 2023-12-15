@@ -1,9 +1,3 @@
-<svelte:head>
-	<title>MastroGPT</title>
-	<meta name="og:title" content="MastroGPT" />
-</svelte:head>
-
-
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sendMessage } from '$lib/service/sendMessage';
@@ -64,56 +58,52 @@
 			}
 		}
 
-		
 		if (threadId.length > 0) {
 			await sendMessageOnThread(threadId, userMessage);
-			await sleep(300);
-			listLastAimessage();
+			await listLastAimessage();
 		}
 	}
 
 	async function listLastAimessage() {
-    try {
-        counter += 1;
-        if (counter > 9) {
-            aiMessage = 'Sorry, but this model is going to sleep :(';
-            await showMessage();
-            await sleep(5000);
-            location.reload();
-        }
+		await sleep(1500);
+		try {
+			counter += 1;
+			if (counter > 9) {
+				aiMessage = 'Sorry, but this model is going to sleep :(';
+				await showMessage();
+				location.reload();
+			}
 
-        await sleep(1500);
-        const result = await listMessages(threadId);
-        const aiNewMessage = result?.text?.value;
-        if (aiNewMessage.length > 0) {
-            if (aiNewMessage === aiMessage) {
-                await listLastAimessage();
-            } else {
-                aiMessage = aiNewMessage;
-                isLoading = false;
-                counter = 0;
-            }
-        } else {
-            await listLastAimessage();
-        }
-        showMessage();
-    } catch (error) {
-		if(counter > 9) {
-        console.error('Error during listLastAimessage:', error);
-        location.reload();
-		} else {
-			await listLastAimessage();
+			const result = await listMessages(threadId);
+			const aiNewMessage = result;
+			if (aiNewMessage.length > 0) {
+				if (aiNewMessage === aiMessage) {
+					await listLastAimessage();
+				} else {
+					aiMessage = aiNewMessage;
+					isLoading = false;
+					counter = 0;
+				}
+			} else {
+				await listLastAimessage();
+			}
+			showMessage();
+		} catch (error) {
+			if (counter > 9) {
+				console.error('Error during listLastAimessage:', error);
+				location.reload();
+			} else {
+				await listLastAimessage();
+			}
 		}
-    }
-}
-
+	}
 
 	onMount(async () => {
-		threadId = (await createThread());
-		if(threadId) {
+		threadId = await createThread();
+		if (threadId) {
 			isLoading = false;
 		}
-		
+
 		aiMessage =
 			"Welcome to MastroGPT.com. I'm here to assist you and provide all the information you need. If everything is clear, please enter your email and click on submit to join our waitlist! Otherwise, feel free to ask anything!";
 		if (aiMessage) {
@@ -121,6 +111,11 @@
 		}
 	});
 </script>
+
+<svelte:head>
+	<title>MastroGPT</title>
+	<meta name="og:title" content="MastroGPT" />
+</svelte:head>
 
 <div>
 	<Divider />

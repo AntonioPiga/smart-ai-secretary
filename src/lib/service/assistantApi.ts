@@ -19,7 +19,7 @@ export async function createThread(): Promise<string> {
 }
 
 
-export function sendMessageOnThread(threadId: string, message: string) {
+export async function sendMessageOnThread(threadId: string, message: string) {
 	const apiUrl = 'https://mastrogpt.nuvolaris.app/api/my/waitlist/sendMessage';
 	const headers = {
 	  'Content-Type': 'application/json',
@@ -51,12 +51,10 @@ export async function listMessages(threadId: string): Promise<any> {
   
 	try {
 	  const response = await axios.post(apiUrl, requestData, { headers });
-	  console.log('Response:', response.data);
+	  //console.log('Response:', response.data);
 	  return response.data;
 	} catch (error) {
 	  console.error('Error:', error);
 	  throw error;
 	}
   }
-  
-  
