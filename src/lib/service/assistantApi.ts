@@ -1,114 +1,62 @@
-import type OpenAI from 'openai';
-import { PUBLIC_ASSISTANT_AI_ID } from '$env/static/public';
+import axios from 'axios';
 
-import type {
-	MessageContentText,
-	MessageCreateParams,
-	Run,
-	RunCreateParams,
-	Thread,
-	ThreadCreateParams,
-	ThreadMessage
-} from 'openai/resources/beta/threads';
-import { sleep } from 'openai/core';
+export async function createThread(): Promise<string> {
+  const apiUrl = 'https://mastrogpt.nuvolaris.app/api/my/waitlist/createThread';
 
-const ASSISTANT_ID = PUBLIC_ASSISTANT_AI_ID;
+  try {
+    const response = await axios.post(apiUrl);
+    console.log('Response:', response.data);
 
-export async function listAssistants(openai: OpenAI) {
-	try {
-		console.log('going to call: list assistants');
-		const responseAss = await openai.beta.assistants.list();
-		console.log(responseAss);
-		return responseAss.data;
-	} catch (error) {
-		console.error('Error listing assistants:', error);
-		throw error;
-	}
-}
-export async function createThread(message: string, openai: OpenAI): Promise<Thread> {
-	try {
-		if (message.length > 0) {
-			let body: ThreadCreateParams = {
-				messages: [
-					{
-						content: message,
-						role: 'user'
-					}
-				]
-			};
-			const createThreadResp = await openai.beta.threads.create(body);
-			return createThreadResp;
-		} else {
-			let body: ThreadCreateParams = {};
-			const createThreadResp = await openai.beta.threads.create(body);
-			return createThreadResp;
-		}
-	} catch (error) {
-		console.error('Error creating thread:', error);
-		throw error;
-	}
+    if (response.data && response.data.id) {
+      return response.data.id as string;
+    } else {
+      throw new Error('thread id not present');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
 }
 
-export async function postMessageOnThread(
-	message: string,
-	threadId: string,
-	openai: OpenAI
-): Promise<ThreadMessage> {
-	try {
-		let body: MessageCreateParams = {
-			content: message,
-			role: 'user'
-		};
 
-		const createThreadResp = await openai.beta.threads.messages.create(threadId, body);
-		return createThreadResp;
-	} catch (error) {
-		console.error('Error creating message on thread:', error);
-		throw error;
-	}
-}
-
-export async function runThread(threadId: string, openai: OpenAI): Promise<Run> {
-	try {
-		let body: RunCreateParams = {
-			assistant_id: ASSISTANT_ID
-		};
-		const runThreadResp = await openai.beta.threads.runs.create(threadId, body);
-		return runThreadResp;
-	} catch (error) {
-		console.error('Error running thread:', error);
-		throw error;
-	}
-}
-
-export async function listLastAssistantThreadMessages(
-	threadId: string,
-	openai: OpenAI,
-	maxAttempts: number = 5 
-  ): Promise<MessageContentText> {
-	try {
-	  const response = await openai.beta.threads.messages.list(threadId);
+export function sendMessageOnThread(threadId: string, message: string) {
+	const apiUrl = 'https://mastrogpt.nuvolaris.app/api/my/waitlist/sendMessage';
+	const headers = {
+	  'Content-Type': 'application/json',
+	};
   
-	  const allMessages = response.data;
-	  console.log(allMessages);
+	const requestData = {
+	  threadId: threadId,
+	  message: message,
+	};
   
-	  const assistantMessages = response.data.filter((message) => message.role === 'assistant');
-	  const lastAssistantMessage = assistantMessages[0];
+	axios.post(apiUrl, requestData, { headers })
+	  .then(response => {
+		console.log('Response:', response.data);
+	  })
+	  .catch(error => {
+		console.error('Error:', error);
+	  });
+}
+
+export async function listMessages(threadId: string): Promise<any> {
+	const apiUrl = 'https://mastrogpt.nuvolaris.app/api/my/waitlist/listMessages';
+	const headers = {
+	  'Content-Type': 'application/json',
+	};
   
-	  if (lastAssistantMessage && lastAssistantMessage.content.length > 0) {
-		const textValue = lastAssistantMessage.content[0] as MessageContentText;
-		return textValue;
-	  } else {
-		if (maxAttempts > 0) {
-			await sleep(1000);
-		  return listLastAssistantThreadMessages(threadId, openai, maxAttempts - 1);
-		} else {
-		  throw new Error('Maximum attempts reached. Unable to retrieve assistant message.');
-		}
-	  }
+	const requestData = {
+	  threadId: threadId,
+	};
+  
+	try {
+	  const response = await axios.post(apiUrl, requestData, { headers });
+	  console.log('Response:', response.data);
+	  return response.data;
 	} catch (error) {
-	  console.error('Error running thread:', error);
-	  throw error; 
+	  console.error('Error:', error);
+	  throw error;
 	}
   }
+  
   

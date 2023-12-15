@@ -7,14 +7,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sendMessage } from '$lib/service/sendMessage';
-	import {
-		createThread,
-		runThread,
-		listLastAssistantThreadMessages,
-		postMessageOnThread
-	} from '$lib/service/assistantApi';
-	import OpenAI from 'openai';
 	import Divider from '$lib/components/Divider.svelte';
+	import { sendMessageOnThread, createThread, listMessages } from '$lib/service/assistantApi';
 	export let data: {
 		apiKey: string;
 		openAiToken: string;
@@ -53,12 +47,6 @@
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	let openai: OpenAI = new OpenAI({
-		organization: data.organization,
-		apiKey: data.apiKey,
-		dangerouslyAllowBrowser: true
-	});
-
 	/**
 	 * OpenAI calls and logic
 	 */
@@ -78,9 +66,8 @@
 
 		
 		if (threadId.length > 0) {
-			await postMessageOnThread(userMessage, threadId, openai);
+			await sendMessageOnThread(threadId, userMessage);
 			await sleep(300);
-			await runThread(threadId, openai);
 			listLastAimessage();
 		}
 	}
@@ -96,7 +83,7 @@
         }
 
         await sleep(1500);
-        const result = await listLastAssistantThreadMessages(threadId, openai);
+        const result = await listMessages(threadId);
         const aiNewMessage = result?.text?.value;
         if (aiNewMessage.length > 0) {
             if (aiNewMessage === aiMessage) {
@@ -122,7 +109,7 @@
 
 
 	onMount(async () => {
-		threadId = (await createThread('', openai)).id;
+		threadId = (await createThread());
 		if(threadId) {
 			isLoading = false;
 		}
