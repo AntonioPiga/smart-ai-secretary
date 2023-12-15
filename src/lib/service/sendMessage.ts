@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function sendMessage(userMessage: string, url: string) {
+export async function sendMessage(userMessage: string) {
 	const headers = {
 		'Content-Type': 'application/json'
 	};
@@ -9,7 +9,7 @@ export async function sendMessage(userMessage: string, url: string) {
 	};
 
 	axios
-		.post(url, data, { headers })
+		.post('https://nuvolaris.app/api/v1/web/mastrogpt/mastrogpt-waitlist/slack-nuv', data, { headers })
 		.then((response) => {
 			console.log(response.status);
 		})

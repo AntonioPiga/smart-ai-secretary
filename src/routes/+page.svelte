@@ -3,12 +3,6 @@
 	import { sendMessage } from '$lib/service/sendMessage';
 	import Divider from '$lib/components/Divider.svelte';
 	import { sendMessageOnThread, createThread, listMessages } from '$lib/service/assistantApi';
-	export let data: {
-		apiKey: string;
-		openAiToken: string;
-		urlSendMessage: string;
-		organization: string;
-	};
 
 	let counter = 0;
 
@@ -49,10 +43,7 @@
 		isLoading = true;
 		if (regexEmail.test(userMessage)) {
 			try {
-				sendMessage(
-					'someone send this message to you on mastrogpt: ' + userMessage,
-					data.urlSendMessage
-				);
+				sendMessage('someone send this message to you on mastrogpt: ' + userMessage);
 			} catch (error) {
 				console.log('Error while sending message', error);
 			}
