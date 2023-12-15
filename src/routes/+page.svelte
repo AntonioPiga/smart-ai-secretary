@@ -1,20 +1,8 @@
-<svelte:head>
-	<title>MastroGPT</title>
-	<meta name="og:title" content="MastroGPT" />
-</svelte:head>
-
-
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sendMessage } from '$lib/service/sendMessage';
-	import {
-		createThread,
-		runThread,
-		listLastAssistantThreadMessages,
-		postMessageOnThread
-	} from '$lib/service/assistantApi';
-	import OpenAI from 'openai';
 	import Divider from '$lib/components/Divider.svelte';
+	import { sendMessageOnThread, createThread, listMessages } from '$lib/service/assistantApi';
 	export let data: {
 		apiKey: string;
 		openAiToken: string;
@@ -53,12 +41,6 @@
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	let openai: OpenAI = new OpenAI({
-		organization: data.organization,
-		apiKey: data.apiKey,
-		dangerouslyAllowBrowser: true
-	});
-
 	/**
 	 * OpenAI calls and logic
 	 */
@@ -76,57 +58,52 @@
 			}
 		}
 
-		
 		if (threadId.length > 0) {
-			await postMessageOnThread(userMessage, threadId, openai);
-			await sleep(300);
-			await runThread(threadId, openai);
-			listLastAimessage();
+			await sendMessageOnThread(threadId, userMessage);
+			await listLastAimessage();
 		}
 	}
 
 	async function listLastAimessage() {
-    try {
-        counter += 1;
-        if (counter > 9) {
-            aiMessage = 'Sorry, but this model is going to sleep :(';
-            await showMessage();
-            await sleep(5000);
-            location.reload();
-        }
+		await sleep(1500);
+		try {
+			counter += 1;
+			if (counter > 9) {
+				aiMessage = 'Sorry, but this model is going to sleep :(';
+				await showMessage();
+				location.reload();
+			}
 
-        await sleep(1500);
-        const result = await listLastAssistantThreadMessages(threadId, openai);
-        const aiNewMessage = result?.text?.value;
-        if (aiNewMessage.length > 0) {
-            if (aiNewMessage === aiMessage) {
-                await listLastAimessage();
-            } else {
-                aiMessage = aiNewMessage;
-                isLoading = false;
-                counter = 0;
-            }
-        } else {
-            await listLastAimessage();
-        }
-        showMessage();
-    } catch (error) {
-		if(counter > 9) {
-        console.error('Error during listLastAimessage:', error);
-        location.reload();
-		} else {
-			await listLastAimessage();
+			const result = await listMessages(threadId);
+			const aiNewMessage = result;
+			if (aiNewMessage.length > 0) {
+				if (aiNewMessage === aiMessage) {
+					await listLastAimessage();
+				} else {
+					aiMessage = aiNewMessage;
+					isLoading = false;
+					counter = 0;
+				}
+			} else {
+				await listLastAimessage();
+			}
+			showMessage();
+		} catch (error) {
+			if (counter > 9) {
+				console.error('Error during listLastAimessage:', error);
+				location.reload();
+			} else {
+				await listLastAimessage();
+			}
 		}
-    }
-}
-
+	}
 
 	onMount(async () => {
-		threadId = (await createThread('', openai)).id;
-		if(threadId) {
+		threadId = await createThread();
+		if (threadId) {
 			isLoading = false;
 		}
-		
+
 		aiMessage =
 			"Welcome to MastroGPT.com. I'm here to assist you and provide all the information you need. If everything is clear, please enter your email and click on submit to join our waitlist! Otherwise, feel free to ask anything!";
 		if (aiMessage) {
@@ -134,6 +111,11 @@
 		}
 	});
 </script>
+
+<svelte:head>
+	<title>MastroGPT</title>
+	<meta name="og:title" content="MastroGPT" />
+</svelte:head>
 
 <div>
 	<Divider />
