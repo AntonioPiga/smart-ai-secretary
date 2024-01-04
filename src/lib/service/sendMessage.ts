@@ -5,11 +5,11 @@ export async function sendMessage(userMessage: string) {
 		'Content-Type': 'application/json'
 	};
 	const data = {
-		userMessage: userMessage
+		text: userMessage
 	};
 
 	axios
-		.post('https://nuvolaris.app/api/v1/web/mastrogpt/mastrogpt-waitlist/slack-nuv', data, { headers })
+		.post('https://nuvolaris.dev/api/v1/web/antoniopiga/slack/slack', data, { headers })
 		.then((response) => {
 			console.log(response.status);
 		})

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export async function createThread(): Promise<string> {
-	const apiUrl = 'https://mastrogpt.nuvolaris.app/api/my/waitlist/createThread';
+	const apiUrl = 'https://nuvolaris.dev/api/v1/web/antoniopiga/waitlist/createThread';
 
 	try {
 		const response = await axios.post(apiUrl);
@@ -19,7 +19,7 @@ export async function createThread(): Promise<string> {
 }
 
 export async function sendMessageOnThread(threadId: string, message: string) {
-	const apiUrl = 'https://mastrogpt.nuvolaris.app/api/my/waitlist/sendMessage';
+	const apiUrl = 'https://nuvolaris.dev/api/v1/web/antoniopiga/waitlist/sendMessage';
 	const headers = {
 		'Content-Type': 'application/json'
 	};
@@ -40,7 +40,7 @@ export async function sendMessageOnThread(threadId: string, message: string) {
 }
 
 export async function listMessages(threadId: string): Promise<any> {
-	const apiUrl = 'https://mastrogpt.nuvolaris.app/api/my/waitlist/listMessages';
+	const apiUrl = 'https://nuvolaris.dev/api/v1/web/antoniopiga/waitlist/listMessages';
 	const headers = {
 		'Content-Type': 'application/json'
 	};
