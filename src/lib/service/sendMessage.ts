@@ -9,7 +9,7 @@ export async function sendMessage(userMessage: string) {
 	};
 
 	axios
-		.post('https://nuvolaris.dev/api/v1/web/antoniopiga/slack/slack', data, { headers })
+		.post('https://nuvolaris.dev/api/v1/web/mastrogpt/slack/slack', data, { headers })
 		.then((response) => {
 			console.log(response.status);
 		})
