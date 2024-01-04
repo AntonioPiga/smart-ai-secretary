@@ -156,7 +156,7 @@
 	</div>
 
 	<h1 class="text-4xl mt-10 md:text-7xl text-center text-primary font-extrabold">
-		🎅🏻 MASTROGPT.com
+		MASTROGPT.com
 		<div class="text-primary text-xl md:text-3xl flex items-center justify-center">
 			powered by
 			<div class="p-3">
