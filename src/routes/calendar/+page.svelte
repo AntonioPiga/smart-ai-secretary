@@ -1,8 +1,10 @@
 <script lang="ts">
 	import axios from 'axios';
 	import { onMount } from 'svelte';
+	import { PUBLIC_URL_GET_CALENDAR_TOKEN } from '$env/static/public';
+	import { PUBLIC_URL_CALENDAR_ID } from '$env/static/public';
 
-	var token;
+	var token = '';
 
 	const authorizationUrl = generateAuthorizationUrl();
 	console.log('Authorization URL:', authorizationUrl);
@@ -11,7 +13,7 @@
 		const code = queryParams.get('code');
 
 		if (code) {
-			token = getToken(code);
+			token = getToken(code) as unknown as string;
 			console.log('token');
 			console.log(token);
 		} else {
@@ -20,7 +22,7 @@
 	}
 
 	function generateAuthorizationUrl() {
-		const clientId = '';
+		const clientId = PUBLIC_URL_CALENDAR_ID;
 		const redirectUri = 'http://127.0.0.1:5173/calendar';
 		const scope = 'https://www.googleapis.com/auth/calendar';
 		const responseType = 'code';
@@ -33,9 +35,24 @@
 	}
 
 	async function getToken(code: string) {
-		//call nuv
+		const apiUrl = PUBLIC_URL_GET_CALENDAR_TOKEN;
 
-		return 'accessToken';
+		const params = {
+			code: code
+		};
+
+		axios
+			.post(apiUrl, params)
+			.then((response) => {
+				console.log('Response is:', response.data);
+				return response.data;
+			})
+			.catch((error) => {
+				console.error('Error during token call:', error);
+				throw error;
+			});
+
+		return 'error';
 	}
 
 	async function getEvents(token: string) {}
@@ -45,17 +62,11 @@
 		const code = queryParams.get('code');
 
 		if (code) {
-			console.log('eccoci');
 			callback();
-		} else {
-			console.log('non ci siamo');
+		} else if (token.length > 0) {
+			getEvents(token);
 		}
-		// if (token.length === 0) {
-		// 	//generateAuthorizationUrl();
-		// } else if (1 + 2 === 3) {
-		// 	getEvents('token');
-		// }
 	});
 </script>
 
-<p>Ciao!</p>
+<p>Ciao</p>
