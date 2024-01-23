@@ -1,15 +1,17 @@
 import axios from 'axios';
+import {PUBLIC_URL_NOTIFY_SLACK} from '$env/static/public'
+
 
 export async function sendMessage(userMessage: string) {
 	const headers = {
 		'Content-Type': 'application/json'
 	};
 	const data = {
-		userMessage: userMessage
+		text: userMessage
 	};
 
 	axios
-		.post('https://nuvolaris.app/api/v1/web/mastrogpt/mastrogpt-waitlist/slack-nuv', data, { headers })
+		.post(PUBLIC_URL_NOTIFY_SLACK, data, { headers })
 		.then((response) => {
 			console.log(response.status);
 		})
