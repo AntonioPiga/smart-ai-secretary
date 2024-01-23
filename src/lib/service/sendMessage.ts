@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {PUBLIC_URL_NOTIFY_SLACK} from '$env/static/public'
+
 
 export async function sendMessage(userMessage: string) {
 	const headers = {
@@ -9,7 +11,7 @@ export async function sendMessage(userMessage: string) {
 	};
 
 	axios
-		.post('https://nuvolaris.dev/api/v1/web/mastrogpt/slack/slack', data, { headers })
+		.post(PUBLIC_URL_NOTIFY_SLACK, data, { headers })
 		.then((response) => {
 			console.log(response.status);
 		})

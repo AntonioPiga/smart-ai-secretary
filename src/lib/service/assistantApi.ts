@@ -1,7 +1,10 @@
 import axios from 'axios';
+import {PUBLIC_URL_CREATE_THREAD} from '$env/static/public'
+import {PUBLIC_URL_SEND_MESSAGE_ON_THREAD} from '$env/static/public'
+import {PUBLIC_URL_LIST_MESSAGE} from '$env/static/public'
 
 export async function createThread(): Promise<string> {
-	const apiUrl = 'https://nuvolaris.dev/api/v1/web/mastrogpt/waitlist/createThread';
+	const apiUrl = PUBLIC_URL_CREATE_THREAD;
 
 	try {
 		const response = await axios.post(apiUrl);
@@ -19,7 +22,7 @@ export async function createThread(): Promise<string> {
 }
 
 export async function sendMessageOnThread(threadId: string, message: string) {
-	const apiUrl = 'https://nuvolaris.dev/api/v1/web/mastrogpt/waitlist/sendMessage';
+	const apiUrl = PUBLIC_URL_SEND_MESSAGE_ON_THREAD;
 	const headers = {
 		'Content-Type': 'application/json'
 	};
@@ -40,7 +43,7 @@ export async function sendMessageOnThread(threadId: string, message: string) {
 }
 
 export async function listMessages(threadId: string): Promise<any> {
-	const apiUrl = 'https://nuvolaris.dev/api/v1/web/mastrogpt/waitlist/listMessages';
+	const apiUrl = PUBLIC_URL_LIST_MESSAGE;
 	const headers = {
 		'Content-Type': 'application/json'
 	};
