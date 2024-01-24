@@ -1,14 +1,20 @@
 <script lang="ts">
 	import axios from 'axios';
 	import { onMount } from 'svelte';
-	import { PUBLIC_URL_GET_CALENDAR_TOKEN } from '$env/static/public';
-	import { PUBLIC_URL_CALENDAR_ID } from '$env/static/public';
-	import { PUBLIC_URL_AI_DESCRIBE_EVENTS } from '$env/static/public';
+	import {
+		PUBLIC_URL_GET_CALENDAR_TOKEN,
+		PUBLIC_URL_CALENDAR_ID,
+		PUBLIC_URL_AI_DESCRIBE_EVENTS
+	} from '$env/static/public';
 
 	var token = '';
 	var eventsDescription: string;
 	var authorizationUrl: string;
 	var displayedMessage: string;
+
+	/**
+	 * Functions util to show text with real effect
+	 */
 
 	async function showMessage() {
 		for (let i = 0; i < eventsDescription.length; i++) {
@@ -20,7 +26,13 @@
 	function sleep(ms: number) {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
+	/**
+	 *
+	 */
 
+	/**
+	 * Google callback after that give consents
+	 */
 	async function callback() {
 		const queryParams = new URLSearchParams(window.location.search);
 		const code = queryParams.get('code');
@@ -28,7 +40,7 @@
 		if (code && token.length == 0) {
 			try {
 				token = await getToken(code);
-				console.log('token:', token);
+				window.history.replaceState({}, document.title, window.location.pathname);
 				var events = await getEvents(token);
 				await descriptionEvents(events);
 				await showMessage();
