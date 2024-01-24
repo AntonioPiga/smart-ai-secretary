@@ -6,10 +6,20 @@
 	import { PUBLIC_URL_AI_DESCRIBE_EVENTS } from '$env/static/public';
 
 	var token = '';
-	var eventsDescription: object;
+	var eventsDescription: string;
+	var authorizationUrl: string;
+	var displayedMessage: string;
 
-	const authorizationUrl = generateAuthorizationUrl();
-	console.log('Authorization URL:', authorizationUrl);
+	async function showMessage() {
+		for (let i = 0; i < eventsDescription.length; i++) {
+			displayedMessage = eventsDescription.substring(0, i + 1);
+			await sleep(30);
+		}
+	}
+
+	function sleep(ms: number) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
+	}
 
 	async function callback() {
 		const queryParams = new URLSearchParams(window.location.search);
@@ -20,13 +30,24 @@
 				token = await getToken(code);
 				console.log('token:', token);
 				var events = await getEvents(token);
-				var aiDescriptionEvents = await descriptionEvents(events);
-				eventsDescription = aiDescriptionEvents;
+				await descriptionEvents(events);
+				await showMessage();
 			} catch (error) {
 				console.error('Error during token and events call:', error);
 			}
 		} else {
 			console.error('Error: code does not exist');
+		}
+	}
+
+	async function getEventsAndDescibeThemAgain() {
+		try {
+			eventsDescription = '';
+			var events = await getEvents(token);
+			await descriptionEvents(events);
+			await showMessage();
+		} catch (error) {
+			console.error('Error during token and events call:', error);
 		}
 	}
 
@@ -41,6 +62,7 @@
 			const response = await axios.post(apiUrl, params);
 			console.log('Response is:', response.data);
 			console.log('Response is:', response.data.token);
+			eventsDescription = response.data.output;
 			return response.data.output;
 		} catch (error) {
 			console.error('Error during token call:', error);
@@ -54,7 +76,7 @@
 		const scope = 'https://www.googleapis.com/auth/calendar';
 		const responseType = 'code';
 
-		const authorizationUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+		authorizationUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(
 			redirectUri
 		)}&scope=${encodeURIComponent(scope)}&response_type=${responseType}`;
 
@@ -80,6 +102,7 @@
 	}
 
 	async function getEvents(token: string) {
+		console.log('get events');
 		const apiUrl = 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
 
 		const headers = {
@@ -128,17 +151,37 @@
 		if (code && token.length == 0) {
 			console.log('callback calling');
 			await callback();
+		} else {
+			console.log('auth url');
+			generateAuthorizationUrl();
 		}
 	});
 </script>
 
-<p>Ciao</p>
-<div class="h-50 border border-primary rounded bg-slate-200 shadow-md p-2">
-	{#if eventsDescription}
-		{eventsDescription}
+<div class="flex justify-center items-center mt-10">
+	{#if authorizationUrl}
+		<button class="rounded bg-light px-3 py-1.5 text-l font-medium text-white hover:bg-primary">
+			<a href={authorizationUrl}>Click here to see your events</a>
+		</button>
 	{:else}
-		<div class="flex justify-center items-center h-30 p-10">
-			<div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+		<div class="h-60 border border-primary rounded bg-slate-200 shadow-md p-2 w-4/6 relative">
+			{#if eventsDescription}
+				{displayedMessage}
+
+				<div class="absolute bottom-0 right-0 flex items-center bg-white">
+					<button
+						type="button"
+						class="rounded bg-light px-3 py-1.5 text-l font-medium text-white hover:bg-primary"
+						on:click={() => getEventsAndDescibeThemAgain()}
+					>
+						Try again
+					</button>
+				</div>
+			{:else}
+				<div class="flex justify-center items-center h-30 p-10">
+					<div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>
