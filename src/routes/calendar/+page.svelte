@@ -180,7 +180,7 @@
 			{#if eventsDescription}
 				{displayedMessage}
 
-				<div class="absolute bottom-0 right-0 flex items-center bg-white">
+				<div class="absolute bottom-0 right-0 flex items-center p-2">
 					<button
 						type="button"
 						class="rounded bg-light px-3 py-1.5 text-l font-medium text-white hover:bg-primary"
