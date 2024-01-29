@@ -5,8 +5,10 @@ An intelligent secretary for showcase site, which notifies you when someone want
 ## Before starting
 Please, before starting, make a copy of the `.env.example` file, insert your environment variables there, and then rename that file as `.env`.
 
-Note: `URL_SEND_MESSAGE` is the variable where you can save a URL if you need to receive some user data (in this case, the user's email). The user's message will be sent in the payload as the `userMessage` variable.
+You need a backend server with secrets saved, such as google certificate to handle oauth, open ai key and slack hoos to send message.
 
+To handle this complexity, use this repo: 
+`https://github.com/AntonioPiga/smart-ai-secretary-backend`
 ## Developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
