@@ -1,5 +1,5 @@
 <script>
-	export var text = '';
+	export var text = "";
 </script>
 
 <div class="mt-5 mb-5">
