@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import logoNuv from '$lib/assets/logoNuv.svg';
-	//$: route = $page.route.id;
+	
 </script>
 
 <header class="mt-2">
