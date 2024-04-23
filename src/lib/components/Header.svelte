@@ -1,7 +1,6 @@
 <script>
 	import { page } from '$app/stores';
 	import logoNuv from '$lib/assets/logoNuv.svg';
-	
 </script>
 
 <header class="mt-2">
