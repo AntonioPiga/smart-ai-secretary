@@ -16,7 +16,7 @@ export async function createThread(): Promise<string> {
 			throw new Error('thread id not present');
 		}
 	} catch (error) {
-		console.error('Error:', error);
+		console.error('Error while creating thread :', error);
 		throw error;
 	}
 }
