@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {PUBLIC_URL_NOTIFY_SLACK} from '$env/static/public'
 
+
 export async function sendMessage(userMessage: string) {
 	const headers = {
 		'Content-Type': 'application/json'
